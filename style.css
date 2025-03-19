@@ -1,0 +1,98 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    display:flex;
+    justify-content: center;
+}
+
+#calculator {
+    border-radius: 25px;
+    margin-top: 10dvh;
+    height: 500px;
+    width: 350px;
+    background-color: black;
+    padding: 30px;
+    padding-top: 50px;
+    display: flex;
+    flex-flow: column nowrap;
+    /* justify-content: space-evenly; */
+    row-gap: 40px;
+}
+
+#screen {
+    flex:1;
+    background-color: gray;
+    padding: 10px;
+    display: flex;
+    flex-flow: column nowrap;
+    /* justify-content: space-evenly; */
+    row-gap: 10px;
+
+}
+
+/* #screen > #operation, */
+/* #screen > #result { */
+/* } */
+
+#screen > #operation {
+    flex:2;
+    background-color: gray;
+}
+#screen > #result {
+    flex:1;
+    background-color: white;
+}
+
+#keyboard {
+    flex: 2;
+    background-color: black;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    grid-template-areas:
+        "numbers numbers operations"
+        "numbers numbers edit"
+        "numbers numbers edit"
+    ;
+    gap:10px;
+}
+#keyboard > #numbers {
+    grid-area: numbers;
+    background-color: black;
+}
+#keyboard > #operations {
+    grid-area: operations;
+    background-color: black;
+}
+#keyboard > #edit {
+    grid-area: edit;
+    background-color: black;
+}
+
+#keyboard > #numbers {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    gap: 10px;
+
+}
+
+#keyboard > #operations {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 10px;
+
+}
+
+#keyboard > #edit {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 10px;
+
+}
