@@ -45,6 +45,8 @@ body {
 #screen > #result {
     flex:1;
     background-color: white;
+    padding: 5px;
+    text-align: end;
 }
 
 #keyboard {
