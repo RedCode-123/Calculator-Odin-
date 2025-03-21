@@ -106,11 +106,11 @@ function checkStatus() {
         }
     } else if (sequence.length === 2 && input === "." && !isAnOperation && !isAnEdit) {
             sequence.push("0" + input);
-            screenResult.innerText = `${sequence[0]} ${sequence[1]} ${sequence[2]}`;
+            screenResult.innerText = toStringSequence(sequence);
     } else if (sequence.length === 3 && input === "." && !isAnOperation && !isAnEdit) {
         if (!sequence[2].includes(".")) {
             sequence[2] += input;
-            screenResult.innerText = `${sequence[0]} ${sequence[1]} ${sequence[2]}`;
+            screenResult.innerText = toStringSequence(sequence);
         }
     } else if(sequence.length === 0 && !isAnOperation && !isAnEdit) {
         sequence.push(input);
@@ -120,24 +120,24 @@ function checkStatus() {
         screenResult.innerText = sequence[0];
     } else if(sequence.length === 1 && isAnOperation && !isAnEdit){
         sequence.push(input);
-        screenResult.innerText = `${sequence[0]} ${sequence[1]}`;
+        screenResult.innerText = toStringSequence(sequence);
     } else if(sequence.length === 2 && !isAnOperation && !isAnEdit) {
         sequence.push(input);
-        screenResult.innerText = `${sequence[0]} ${sequence[1]} ${sequence[2]}`;
+        screenResult.innerText = toStringSequence(sequence);
     } else if(sequence.length === 3 && !isAnOperation && !isAnEdit) {
        sequence[2] += input;
-        screenResult.innerText = `${sequence[0]} ${sequence[1]} ${sequence[2]}`;
+        screenResult.innerText = toStringSequence(sequence);
     } else if(sequence.length === 3 && input === "=" && isAnEdit) {
         let operationHolder = operate(+sequence[0], sequence[1], +sequence[2]);
-        sequence = [operationHolder];
+        sequence = [operationHolder.toString()];
         // Redondeamos el numero que tenga hasta 10 decimales
         screenResult.innerText = roundNumberUntil(operationHolder,10);
     } else if(sequence.length === 3 && isAnOperation && !isAnEdit) {
         let operationHolder = operate(+sequence[0], sequence[1], +sequence[2]);
         sequence = [];
-        sequence.push(operationHolder);
+        sequence.push(operationHolder.toString());
         sequence.push(input);
-        screenResult.innerText = `${sequence[0]} ${sequence[1]}`;
+        screenResult.innerText = toStringSequence(sequence);
     } else if(input === "DEL") {
         let newSequence = delChar(sequence);
         sequence = newSequence;
@@ -158,6 +158,55 @@ let keyboardEditName = [ "CLEAR", "DEL" , "="]
 let bgColor = ["red","yellow" , "green"]
 let keyboardEd = document.querySelector("#keyboard > #edit");
 
+
+document.addEventListener("keyup", (event) => {
+    let keyPressed = event.key;
+    console.log(keyPressed);
+    if(keyboardNumbersName.includes(keyPressed)){
+        // Si presionamos un numero
+        // changeColorBtn(btn,"gray", "green");
+        input = keyPressed;
+        checkStatus();
+        if(keyPressed === "."){
+            changeColorBtn(document.querySelector("#key-dot"), "gray", "green");
+        } else{
+            changeColorBtn(document.querySelector("#key-"+keyPressed), "gray", "green");
+        }
+    } else if(keyboardOperationsName.includes(keyPressed)){
+
+        try {
+            input = keyPressed;
+            checkStatus();
+        } catch (error) {
+            screenResult.innerText = error;
+            console.log(error);
+        }
+        changeColorBtn(document.querySelector("#op-"+keyPressed), "gray", "green");
+    } else if(keyPressed === "Enter"){
+        try {
+            input = "="
+            checkStatus();
+
+        } catch (error) {
+            screenResult.innerText = error;
+            console.log(error);
+        }
+        changeColorBtn(document.querySelector("#edit-eq"), "green", "grey");
+    }else if(keyPressed === "Backspace") {
+        // DEL button
+        input = "DEL";
+        checkStatus();
+
+            changeColorBtn(document.querySelector("#edit-DEL"), "yellow", "grey");
+    }else if(keyPressed === "Delete") {
+      // CLEAR button
+        input = "CLEAR";
+        checkStatus();
+
+        changeColorBtn(document.querySelector("#edit-CLEAR"), "red", "grey");
+    }
+});
+
 for (let x = 0 ; x < 12; x++) {
     let btn = document.createElement("div");
     btn.innerText = keyboardNumbersName[x];
@@ -165,25 +214,21 @@ for (let x = 0 ; x < 12; x++) {
     btn.style["text-align"] = "center"
     btn.style["align-content"] = "center"
     btn.style["color"] = "white"
-    btn.setAttribute("id", "key-"+ x);
-    if (x < 10) {
+    if(keyboardNumbersName[x] === "."){
+        btn.setAttribute("id", "key-dot");
+    }else{
+        btn.setAttribute("id", "key-"+ keyboardNumbersName[x]);
+    }
+    if (x < 11) {
         btn.addEventListener("click", () => {
-            // Si presionamos el igual
+            // Si presionamos un numero
             input = keyboardNumbersName[x];
             checkStatus();
             changeColorBtn(btn,"gray", "green");
         });
-    } else if (x === 10) {
-        // Si presionamos el punto
-        btn.addEventListener("click", () => {
-            // Si presionamos el punto
-            input = keyboardNumbersName[x];
-            checkStatus();
-            changeColorBtn(btn,"gray", "green");
 
-        }
 
-        )}
+    }
 
     keyboardNumbers.appendChild(btn);
 }
@@ -195,12 +240,18 @@ for (let x = 0; x < 4; x++) {
     btn.style["text-align"] = "center"
     btn.style["align-content"] = "center"
     btn.style["color"] = "white"
-    btn.setAttribute("id", "op"+ x);
+    btn.setAttribute("id", "op-"+ keyboardOperationsName[x]);
     btn.addEventListener("click", () => {
-        input = keyboardOperationsName[x];
-        checkStatus();
-
         changeColorBtn(btn, "gray", "green");
+
+        try {
+            input = keyboardOperationsName[x];
+            checkStatus();
+        } catch (error) {
+            screenResult.innerText = error;
+            console.log(error);
+        }
+
     });
     keyboardOp.appendChild(btn);
 
@@ -213,7 +264,11 @@ for (let x= 0; x < 3; x++) {
     btn.style["text-align"] = "center";
     btn.style["align-content"] = "center";
     btn.style["color"] = "black";
-    btn.setAttribute("id", "edit-"+ x);
+    if(keyboardEditName[x] === "=") {
+        btn.setAttribute("id", "edit-eq");
+    }else {
+        btn.setAttribute("id", "edit-"+ keyboardEditName[x]);
+    }
 
     if (x === 2) {
         // "=" button
@@ -249,4 +304,3 @@ for (let x= 0; x < 3; x++) {
     keyboardEd.appendChild(btn);
 }
 
-// TODO Hacer que funcione el teclado
