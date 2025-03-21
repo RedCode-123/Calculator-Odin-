@@ -53,7 +53,20 @@ function operate(n1, op, n2) {
         throw new Error("NO OPERATOR FOUND");
     }
 }
-
+function  roundNumberUntil(number, until) {
+    // Redondea "number" hast "until" decimales
+    number = +number;
+  if(!Number.isInteger(number)){
+      number = number.toString();
+      let indexOfdot = number.indexOf(".");
+    let decimalPart = number.slice(indexOfdot, -1);
+    console.log(decimalPart.length)
+     if(decimalPart.length >= until) {
+       return Math.round(number);
+     }
+  }
+    return number;
+}
 function changeColorBtn(obj,color1, color2) {
     // color1 is the original color
     // color2 color presented when the key is pressed
@@ -64,21 +77,36 @@ function changeColorBtn(obj,color1, color2) {
 function checkStatus() {
     let isAnOperation = keyboardOperationsName.includes(input);
     let isAnEdit = keyboardEditName.includes(input);
-
     if(input === "CLEAR" && isAnEdit) {
         sequence = [];
         input = "";
         screenResult.innerText = "";
-    } else if(sequence.length === 0 && !isAnOperation) {
+    } else if (sequence.length === 0 && input === "." && !isAnOperation && !isAnEdit) {
+        sequence.push("0" + input);
+        screenResult.innerText = sequence[0];
+    } else if (sequence.length === 1 && input === "." && !isAnOperation && !isAnEdit) {
+        if (!sequence[0].includes(".")) {
+            sequence[0] += input;
+            screenResult.innerText = sequence[0];
+        }
+    } else if (sequence.length === 2 && input === "." && !isAnOperation && !isAnEdit) {
+            sequence.push("0" + input);
+            screenResult.innerText = `${sequence[0]} ${sequence[1]} ${sequence[2]}`;
+    } else if (sequence.length === 3 && input === "." && !isAnOperation && !isAnEdit) {
+        if (!sequence[2].includes(".")) {
+            sequence[2] += input;
+            screenResult.innerText = `${sequence[0]} ${sequence[1]} ${sequence[2]}`;
+        }
+    } else if(sequence.length === 0 && !isAnOperation && !isAnEdit) {
         sequence.push(input);
         screenResult.innerText = sequence[0];
-    } else if(sequence.length === 1 && !isAnOperation)  {
+    } else if(sequence.length === 1 && !isAnOperation && !isAnEdit)  {
        sequence[0] += input;
         screenResult.innerText = sequence[0];
-    } else if(sequence.length === 1 && isAnOperation){
+    } else if(sequence.length === 1 && isAnOperation && !isAnEdit){
         sequence.push(input);
         screenResult.innerText = `${sequence[0]} ${sequence[1]}`;
-    } else if(sequence.length === 2 && !isAnOperation) {
+    } else if(sequence.length === 2 && !isAnOperation && !isAnEdit) {
         sequence.push(input);
         screenResult.innerText = `${sequence[0]} ${sequence[1]} ${sequence[2]}`;
     } else if(sequence.length === 3 && !isAnOperation && !isAnEdit) {
@@ -87,8 +115,8 @@ function checkStatus() {
     } else if(sequence.length === 3 && input === "=" && isAnEdit) {
         let operationHolder = operate(+sequence[0], sequence[1], +sequence[2]);
         sequence = [];
-        sequence.push(operationHolder);
-        screenResult.innerText = sequence[0] ;
+        // Redondeamos el numero que tenga hasta 10 decimales
+        screenResult.innerText = roundNumberUntil(operationHolder,10);
     } else if(sequence.length === 3 && isAnOperation && !isAnEdit) {
         let operationHolder = operate(+sequence[0], sequence[1], +sequence[2]);
         sequence = [];
@@ -96,7 +124,6 @@ function checkStatus() {
         sequence.push(input);
         screenResult.innerText = `${sequence[0]} ${sequence[1]}`;
     }
-
 
 }
 // let num1 ="", operator = "";
@@ -129,8 +156,15 @@ for (let x = 0 ; x < 12; x++) {
         });
     } else if (x === 10) {
         // Si presionamos el punto
-            btn.addEventListener("click", () => !(num1.includes(".")) ? num1 += ".": null);
-    }
+        btn.addEventListener("click", () => {
+            // Si presionamos el punto
+            input = keyboardNumbersName[x];
+            checkStatus();
+            changeColorBtn(btn,"gray", "green");
+
+        }
+
+        )}
 
     keyboardNumbers.appendChild(btn);
 }
@@ -185,3 +219,6 @@ for (let x= 0; x < 3; x++) {
 
     keyboardEd.appendChild(btn);
 }
+
+// TODO Hacer que funcione el boton de "DEL"
+// TODO Hacer que funcione el teclado
