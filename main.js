@@ -74,6 +74,21 @@ function changeColorBtn(obj,color1, color2) {
     setTimeout(() => obj.style["background-color"] = color1,200);
 }
 
+function delChar(list) {
+  let prevItems = list.slice(0, list.length-1);
+  let lastItem = list[list.length-1].toString();
+  prevItems.push(lastItem.slice(0,lastItem.length-1));
+
+   if((prevItems[prevItems.length-1] === "")) {
+     return prevItems.slice(0, prevItems.length-1);
+   }
+   return prevItems;
+}
+
+function toStringSequence(list) {
+  return  list.reduce((acc, item) => acc + " " + item, "")
+}
+
 function checkStatus() {
     let isAnOperation = keyboardOperationsName.includes(input);
     let isAnEdit = keyboardEditName.includes(input);
@@ -114,7 +129,7 @@ function checkStatus() {
         screenResult.innerText = `${sequence[0]} ${sequence[1]} ${sequence[2]}`;
     } else if(sequence.length === 3 && input === "=" && isAnEdit) {
         let operationHolder = operate(+sequence[0], sequence[1], +sequence[2]);
-        sequence = [];
+        sequence = [operationHolder];
         // Redondeamos el numero que tenga hasta 10 decimales
         screenResult.innerText = roundNumberUntil(operationHolder,10);
     } else if(sequence.length === 3 && isAnOperation && !isAnEdit) {
@@ -123,6 +138,10 @@ function checkStatus() {
         sequence.push(operationHolder);
         sequence.push(input);
         screenResult.innerText = `${sequence[0]} ${sequence[1]}`;
+    } else if(input === "DEL") {
+        let newSequence = delChar(sequence);
+        sequence = newSequence;
+        screenResult.innerText = toStringSequence(sequence);
     }
 
 }
@@ -197,6 +216,7 @@ for (let x= 0; x < 3; x++) {
     btn.setAttribute("id", "edit-"+ x);
 
     if (x === 2) {
+        // "=" button
         btn.addEventListener("click", () => {
         changeColorBtn(btn, "green", "grey");
         try {
@@ -210,15 +230,23 @@ for (let x= 0; x < 3; x++) {
         }
         });
     } else if(x === 0) {
+        //Clear button
         btn.addEventListener("click", () => {
             changeColorBtn(btn, "red", "grey");
             input = keyboardEditName[x]
             checkStatus();
         });
+    } else if(x === 1){
+        // DEL button
+        btn.addEventListener("click", () => {
+            changeColorBtn(btn, "yellow", "grey");
+            input = keyboardEditName[x]
+            checkStatus();
+        });
+
     }
 
     keyboardEd.appendChild(btn);
 }
 
-// TODO Hacer que funcione el boton de "DEL"
 // TODO Hacer que funcione el teclado
