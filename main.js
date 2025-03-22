@@ -39,19 +39,24 @@ function divide(num1, num2) {
 
 
 function operate(n1, op, n2) {
-    let operation = {
-        "+": add(n1, n2),
-        "-": subtract(n1, n2),
-        "*": multiply(n1, n2),
-        "/": divide(n1, n2),
-    };
-
-
-    if (op in operation) {
-        return operation[op];
-    } else {
+    switch(op){
+    case "+":
+        return add(n1, n2);
+        break;
+    case "-":
+        return subtract(n1, n2);
+        break;
+    case "*":
+        return multiply(n1, n2);
+        break;
+    case "/":
+        return divide(n1, n2);
+        break;
+    default:
         throw new Error("NO OPERATOR FOUND");
     }
+
+
 }
 function  roundNumberUntil(number, until) {
     // Redondea "number" hast "until" decimales
@@ -129,9 +134,9 @@ function checkStatus() {
         screenResult.innerText = toStringSequence(sequence);
     } else if(sequence.length === 3 && input === "=" && isAnEdit) {
         let operationHolder = operate(+sequence[0], sequence[1], +sequence[2]);
-        sequence = [operationHolder.toString()];
+        sequence = [roundNumberUntil(operationHolder,10).toString()];
         // Redondeamos el numero que tenga hasta 10 decimales
-        screenResult.innerText = roundNumberUntil(operationHolder,10);
+        screenResult.innerText = sequence[0];
     } else if(sequence.length === 3 && isAnOperation && !isAnEdit) {
         let operationHolder = operate(+sequence[0], sequence[1], +sequence[2]);
         sequence = [];
